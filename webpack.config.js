@@ -26,11 +26,6 @@ const clientEntrypoints = [
     entry: './src/client/MainDialog.jsx',
     filename: 'main.html',
   },
-  {
-    name: 'CLIENT - about sidebar',
-    entry: './src/client/AboutDialog.jsx',
-    filename: 'about.html',
-  },
 ];
 
 /*********************************

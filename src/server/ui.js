@@ -1,6 +1,6 @@
 export const onOpen = () => {
   SpreadsheetApp.getUi()
-    .createMenu('My Sample React Project') // edit me!
+    .createMenu('Webapp') // edit me!
     .addItem('Sheet Name Editor', 'openDialog')
     .addItem('About me', 'openAboutSidebar')
     .addToUi();
@@ -14,6 +14,6 @@ export const openDialog = () => {
 };
 
 export const openAboutSidebar = () => {
-  const html = HtmlService.createHtmlOutputFromFile('about');
-  SpreadsheetApp.getUi().showSidebar(html);
+  // const html = HtmlService.createHtmlOutputFromFile('about');
+  // SpreadsheetApp.getUi().showSidebar(html);
 };
