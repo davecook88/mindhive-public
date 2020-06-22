@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 
 const WelcomePage = ({ setCurrentUser }) => {
   const [email, setEmail] = useState('');
-  const [errors, setErrors] = useState(['error']);
+  const [errors, setErrors] = useState([]);
 
   const clickHandler = (e) => {
     e.preventDefault();
-    setCurrentUser(email);
+    const result = setCurrentUser(email);
+    if (result !== 'success') {
+      setErrors(result);
+    }
   }
 
   return (

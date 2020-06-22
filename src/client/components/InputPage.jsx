@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Forms from './Forms';
+import NutritionalInformationForm  from './NutritionalInformation';
 
 export default class InputPage extends Component {
 
@@ -8,15 +9,19 @@ export default class InputPage extends Component {
     this.state = {
       selected:undefined
     }
-    this.formOptions = [
-      'initial'
-    ];
+    this.formOptions = {
+      'Initial Signup':'initial',
+      'AM Checklist':'am_checklist',
+      'PM Checklist':'pm_checklist',
+      'Add meal': 'meals'
+    }
   }
 
   createFormButtons = () => {
-    return this.formOptions.map(formOption => (
+    const formTitles = Object.keys(this.formOptions);
+    return formTitles.map(formOption => (
       <div className="col">
-        <div className="btn green" onClick={(e) => this.selectForm(formOption)}>{formOption}</div>
+        <div className="btn green" onClick={(e) => this.selectForm(this.formOptions[formOption])}>{formOption}</div>
       </div>
     ));
   }
@@ -28,13 +33,12 @@ export default class InputPage extends Component {
   render() {
     return (
       <div className="container">
-        <span>InputPage</span>
         <div className="row">
           {this.createFormButtons()}
         </div>
-        <div className="row">
-          {this.state.selected}
-          {this.state.selected ? <Forms formName={this.state.selected} email={this.props.currentUser} /> : null}
+        <div className="row">          
+          {this.state.selected ? this.state.selected === 'meals' ? <NutritionalInformationForm />:
+            <Forms formName={this.state.selected} email={this.props.currentUser.email} /> : null}
         </div>
       </div>
     )

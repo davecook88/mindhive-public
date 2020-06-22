@@ -1,15 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300&family=Roboto:ital,wght@0,400;1,300&display=swap');
+
 :root {
 	--grey: #252827;
 	--green:#39ff94;
 	--light-grey:#d9d9d9;
-
 }
 
+h1,h2,h3,h4,h5,h6 {
+	font-family: 'Roboto';
+}
+
+
+.logo-image {
+	height:-webkit-fill-available;
+}
+
+span, p {
+	font-family: 'Poppins'
+}
+
+.warning-bar-content{
+	display: none;
+}
 .pointer {
 	cursor: pointer;
 }
 
-.grey {
+.dark-grey {
 	background-color: var(--grey);
 }
 .green {
@@ -20,4 +37,16 @@
 }
 .white {
 	background-color: white;
+}
+
+.header{
+	font-size: 1.2em;
+	font-weight: bold;
+}
+.sub-text {
+	font-size: 0.9em;
+	font-family: Roboto	;
+}
+.table-cell:hover {
+	background-color: var(--light-grey);
 }
