@@ -13,25 +13,30 @@ class App extends React.Component {
     }
   }
 
-  componentDidMount() {
-    const email = server.getActiveUserEmail()
-    email.then(email => {
-      this.setState({currentUser:email})
-    });
-  }
+  // componentDidMount() {
+  //   const email = server.getActiveUserEmail()
+  //   email.then(email => {
+  //     this.setState({currentUser:email})
+  //   });
+  // }
 
   changePage = (page) => {
     this.setState({ page: page });
   }
+
+  setCurrentUser = (email) => {
+    this.setState({ currentUser: email });
+    console.log(this.state);
+  }
   
   render() {
-    const { currentUser } = this.state;
+    // const { currentUser } = this.state;
     return (
       <div className="App">
         <Navbar changePage={this.changePage}/>
         { 
-          this.state.currentUser === '' ? <WelcomePage setActiveUser={this.setActiveUser} /> : 
-          this.state.page === 'inputs' ? <InputPage currentUser={currentUser}/> : null
+          this.state.currentUser === '' ? <WelcomePage setCurrentUser={this.setCurrentUser} /> : 
+          this.state.page === 'inputs' ? <InputPage currentUser={this.state.currentUser}/> : null
         }
         <p>{this.state.currentUser}</p>
         <p>{this.state.page}</p>
