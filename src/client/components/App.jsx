@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from './Navbar';
 import server from '../server';
+import WelcomePage from './WelcomePage';
 import InputPage from './InputPage';
 
 class App extends React.Component {
@@ -28,7 +29,8 @@ class App extends React.Component {
     return (
       <div className="App">
         <Navbar changePage={this.changePage}/>
-        {
+        { 
+          this.state.currentUser === '' ? <WelcomePage setActiveUser={this.setActiveUser} /> : 
           this.state.page === 'inputs' ? <InputPage currentUser={currentUser}/> : null
         }
         <p>{this.state.currentUser}</p>
