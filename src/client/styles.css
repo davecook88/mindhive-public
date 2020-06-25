@@ -4,6 +4,7 @@
 	--grey: #252827;
 	--green:#39ff94;
 	--light-grey:#d9d9d9;
+	--transparent: rgba(255,255,255,0);
 }
 
 h1,h2,h3,h4,h5,h6 {
@@ -12,11 +13,12 @@ h1,h2,h3,h4,h5,h6 {
 
 
 .logo-image {
-	height:-webkit-fill-available;
+	height:4em;
 }
 
 span, p {
-	font-family: 'Poppins'
+	font-family: 'Poppins';
+	line-height: 1.2em;
 }
 
 .warning-bar-content{
@@ -25,7 +27,9 @@ span, p {
 .pointer {
 	cursor: pointer;
 }
-
+.absolute {
+	position: absolute;
+}
 .dark-grey {
 	background-color: var(--grey);
 }
@@ -35,18 +39,60 @@ span, p {
 .light-grey {
 	background-color: var(--light-grey);
 }
+.light-grey-text {
+	color: var(--light-grey) !important;
+}
 .white {
 	background-color: white;
+}
+.transparent {
+	background-color: var(--transparent);
+}
+.flex-center-wrapper {
+	display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.full-page {
+	height: 100%;
+	width: 100%;
 }
 
 .header{
 	font-size: 1.2em;
 	font-weight: bold;
 }
+.highlight-on-hover:hover{
+	color: var(--green);
+}
 .sub-text {
 	font-size: 0.9em;
 	font-family: Roboto	;
 }
 .table-cell:hover {
-	background-color: var(--light-grey);
+	color: var(--green);
+}
+.side-padding{
+	padding: 0em 0.5em;
+}
+.tabs{
+	display: flex;
+}
+.tabs .tab {
+	-webkit-box-flex: 1;
+	flex-grow: 1;
+	color:#000;
+	text-align: center;
+}
+.tab:hover {
+	background-color: var(--grey);
+	color: var(--green);
+}
+
+.margin-top {
+	margin-top:4em;
+}
+
+.spinner-green, .spinner-green-only{
+	border-color: var(--green);
 }

@@ -1,21 +1,23 @@
 import sheetData from './sheet_helpers/sheetData/sheetData';
-import SpreadsheetManager from './sheet_helpers/SpreadsheetManager';
-
+import SpreadsheetManager from './sheet_helpers/SpreadsheetManager'
 const getMasterSheet = () => SpreadsheetApp.openById(sheetData.masterSheetId);
 
 const getSheets = () => SpreadsheetApp.getActive().getSheets();
 
 const getActiveSheetName = () => SpreadsheetApp.getActive().getSheetName();
 
-export const getSheetsData = () => {
+export const getSheetsData = (sheetName) => {
   const master = getMasterSheet();
-  Logger.log(sheetData.masterSheetId);
-  Logger.log(master.getName());
-  const obj = {master: master, sheets:{}}
-  for (let name in sheetData.sheetNames){
-    obj.sheets[name] = new SpreadsheetManager(master, name);
+  Logger.log('getSheetsData', sheetName);
+  const ssm = new SpreadsheetManager(master, sheetName);
+  
+  const returnObject =  {
+    values:ssm.values,
+    rowHeaders:ssm.rowHeaders,
+    name:sheetName,
   }
-  return obj;
+  Logger.log(returnObject);
+  return returnObject;
 };
 
 export const addSheet = sheetTitle => {
@@ -36,3 +38,11 @@ export const setActiveSheet = sheetName => {
   return getSheetsData();
 };
 
+export const updateAllValues = ssm => {
+  const master = getMasterSheet();
+
+  const sheet = master.getSheetByName(ssm.name);
+
+  const { values } = ssm;
+  sheet.getRange(1, 1, values.length, values[0].length).setValues(values);
+};

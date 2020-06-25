@@ -7,12 +7,24 @@
     <meta name="google-signin-client_id" content="187688865576-1m1j5gjse0a50tp740puji1jrt3e5m1f.apps.googleusercontent.com">
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    
+    <!-- Google charts -->
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
   </head>
   <body>
   	<section id="index">
   		<!-- bundled js and css will get inlined here -->
-  	</section>
+    </section>
+    <script>
+      const warningBarElements = document.getElementsByClassName('warning-bar-content');
+      for (let i = 0; i < warningBarElements.length; i++) {
+        const el = warningBarElements[i];;
+        el.hidden = true;
+      }
+    </script>
   </body>
 </html>

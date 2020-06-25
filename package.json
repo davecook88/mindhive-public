@@ -24,10 +24,13 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
+    "apexcharts": "^3.19.2",
     "axios": "^0.19.2",
     "prop-types": "^15.7.2",
     "react": "^16.13.0",
+    "react-apexcharts": "^1.3.7",
     "react-dom": "^16.13.0",
+    "react-google-charts": "^3.0.15",
     "react-transition-group": "^1.2.1"
   },
   "devDependencies": {

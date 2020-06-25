@@ -37,42 +37,5 @@ export default class SpreadsheetManager{
     * @param bool valuesOnly = when true, function returns 1d array. When false, 2d array
     * @return array of data from sheet
   */
-  getValuesInColumn(headerName, valuesOnly = false) {
-    const { values, rowHeaders } = this;
-    if (rowHeaders.hasOwnProperty(headerName)){
-      const columnIndex = rowHeaders[headerName];
-      
-      return values.slice(1,).map(row => {
-        const cell = valuesOnly ? row[columnIndex] : [row[columnIndex]];
-        return cell;
-        });
-    } else {
-      Logger.log(`${headerName} not found in row headers`);
-      return false;
-    }
-  }
-  /**
-    * @desc paste formatted column into sheet by header name
-    * @param string  headerName
-  */
-  pasteValuesToColumn(headerName, columnArray){
-    const { sheet, rowHeaders } = this;
-    if (rowHeaders.hasOwnProperty(headerName)){
-      const columnIndex = rowHeaders[headerName];
-      
-      const pasteRange = sheet.getRange(2,columnIndex + 1,columnArray.length,1);
-      const pasteAddress = pasteRange.getA1Notation();
-      pasteRange.setValues(columnArray);
-    } else {
-      Logger.log(`${headerName} not found in row headers`);
-      return false;
-    }
-  }
-  /**
-    * @desc updates sheet with values from this.values;
-  */
-  updateAllValues() {
-    sheet.getRange(1,1,values.length,values[0].length).setValues(values);
-  }
   
 }

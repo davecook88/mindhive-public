@@ -8,6 +8,7 @@ global.onOpen = publicUiFunctions.onOpen;
 global.addSheet = publicSheetFunctions.addSheet;
 global.deleteSheet = publicSheetFunctions.deleteSheet;
 global.setActiveSheet = publicSheetFunctions.setActiveSheet;
+global.updateAllValues = publicSheetFunctions.updateAllValues;
 global.getSheetsData = publicSheetFunctions.getSheetsData;
 global.doGet = publicRouterFunctions.doGet;
 global.getActiveUserEmail = userFunctions.getActiveUserEmail;

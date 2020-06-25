@@ -6,6 +6,8 @@ function deleteSheet() {
 }
 function setActiveSheet() {
 }
+function updateAllValues() {
+}
 function getSheetsData() {
 }
 function doGet() {
@@ -68,11 +70,18 @@ function getActiveUserEmail() {
         return deleteSheet;
     })), __webpack_require__.d(__webpack_exports__, "d", (function() {
         return setActiveSheet;
+    })), __webpack_require__.d(__webpack_exports__, "e", (function() {
+        return updateAllValues;
     }));
     var sheetData_sheetData = {
         masterSheetId: "1iAySI5XDUJkJ0wqwVacIZeHpRKxV_06gUteNMEBXduI",
         sheetNames: {
-            users: "users"
+            users: "users",
+            meals: "meals",
+            pm_checklist: "pm_checklist",
+            am_checklist: "am_checklist",
+            initial_setup: "initial_setup",
+            macrochart: "macrochart"
         }
     };
     function _defineProperties(target, props) {
@@ -101,43 +110,19 @@ function getActiveUserEmail() {
             value: function() {
                 return this.sheet.getDataRange().getValues();
             }
-        }, {
-            key: "getValuesInColumn",
-            value: function(headerName) {
-                var valuesOnly = arguments.length > 1 && arguments[1] !== undefined && arguments[1], values = this.values, rowHeaders = this.rowHeaders;
-                if (rowHeaders.hasOwnProperty(headerName)) {
-                    var columnIndex = rowHeaders[headerName];
-                    return values.slice(1).map((function(row) {
-                        return valuesOnly ? row[columnIndex] : [ row[columnIndex] ];
-                    }));
-                }
-                return Logger.log("".concat(headerName, " not found in row headers")), !1;
-            }
-        }, {
-            key: "pasteValuesToColumn",
-            value: function(headerName, columnArray) {
-                var sheet = this.sheet, rowHeaders = this.rowHeaders;
-                if (!rowHeaders.hasOwnProperty(headerName)) return Logger.log("".concat(headerName, " not found in row headers")), 
-                !1;
-                var columnIndex = rowHeaders[headerName], pasteRange = sheet.getRange(2, columnIndex + 1, columnArray.length, 1);
-                pasteRange.getA1Notation(), pasteRange.setValues(columnArray);
-            }
-        }, {
-            key: "updateAllValues",
-            value: function() {
-                sheet.getRange(1, 1, values.length, values[0].length).setValues(values);
-            }
         } ]) && _defineProperties(Constructor.prototype, protoProps), staticProps && _defineProperties(Constructor, staticProps), 
         SpreadsheetManager;
-    }(), sheets_getSheetsData = function() {
-        var master = SpreadsheetApp.openById(sheetData_sheetData.masterSheetId);
-        Logger.log(sheetData_sheetData.masterSheetId), Logger.log(master.getName());
-        var obj = {
-            master: master,
-            sheets: {}
+    }(), sheets_getMasterSheet = function() {
+        return SpreadsheetApp.openById(sheetData_sheetData.masterSheetId);
+    }, sheets_getSheetsData = function(sheetName) {
+        var master = sheets_getMasterSheet();
+        Logger.log("getSheetsData", sheetName);
+        var ssm = new SpreadsheetManager(master, sheetName), returnObject = {
+            values: ssm.values,
+            rowHeaders: ssm.rowHeaders,
+            name: sheetName
         };
-        for (var name in sheetData_sheetData.sheetNames) obj.sheets[name] = new SpreadsheetManager(master, name);
-        return obj;
+        return Logger.log(returnObject), returnObject;
     }, addSheet = function(sheetTitle) {
         return SpreadsheetApp.getActive().insertSheet(sheetTitle), sheets_getSheetsData();
     }, deleteSheet = function(sheetIndex) {
@@ -145,6 +130,9 @@ function getActiveUserEmail() {
         return SpreadsheetApp.getActive().deleteSheet(sheets[sheetIndex]), sheets_getSheetsData();
     }, setActiveSheet = function(sheetName) {
         return SpreadsheetApp.getActive().getSheetByName(sheetName).activate(), sheets_getSheetsData();
+    }, updateAllValues = function(ssm) {
+        var sheet = sheets_getMasterSheet().getSheetByName(ssm.name), values = ssm.values;
+        sheet.getRange(1, 1, values.length, values[0].length).setValues(values);
     };
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
@@ -176,8 +164,8 @@ function getActiveUserEmail() {
         var _ui__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1), _sheets__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(0), _routes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2), _user__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
         global.onOpen = _ui__WEBPACK_IMPORTED_MODULE_0__["a"], global.addSheet = _sheets__WEBPACK_IMPORTED_MODULE_1__["a"], 
         global.deleteSheet = _sheets__WEBPACK_IMPORTED_MODULE_1__["b"], global.setActiveSheet = _sheets__WEBPACK_IMPORTED_MODULE_1__["d"], 
-        global.getSheetsData = _sheets__WEBPACK_IMPORTED_MODULE_1__["c"], global.doGet = _routes__WEBPACK_IMPORTED_MODULE_2__["a"], 
-        global.getActiveUserEmail = _user__WEBPACK_IMPORTED_MODULE_3__["a"];
+        global.updateAllValues = _sheets__WEBPACK_IMPORTED_MODULE_1__["e"], global.getSheetsData = _sheets__WEBPACK_IMPORTED_MODULE_1__["c"], 
+        global.doGet = _routes__WEBPACK_IMPORTED_MODULE_2__["a"], global.getActiveUserEmail = _user__WEBPACK_IMPORTED_MODULE_3__["a"];
     }.call(this, __webpack_require__(5));
 }, function(module, exports) {
     var g;
