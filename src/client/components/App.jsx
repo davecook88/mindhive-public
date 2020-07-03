@@ -1,11 +1,12 @@
 import React from 'react';
-import Navbar from './Navbar';
-import SubNav from './SubNav';
 import server from '../server';
 import WelcomePage from './WelcomePage';
 import InputPage from './InputPage';
 import Preloader from './Preloader';
 import Dashboard from './Dashboard';
+import SideNav from './SideNav';
+import NutritionalInformationForm from './NutritionalInformation';
+import Workouts from './Workouts';
 
 class App extends React.Component {
   constructor(props) {
@@ -16,13 +17,12 @@ class App extends React.Component {
       userSheet: {},
       options: [],
       selectForm: '',
-      ready:false,
+      ready: false,
+      navIsClosed: false,
     };
   }
 
   componentDidMount = () => {
-    const me = server.getActiveUserEmail();
-    me.then((user) => {console.log(user);});
     const sheetsData = server.getSheetsData('users');
     console.log(sheetsData);
     sheetsData
@@ -38,21 +38,19 @@ class App extends React.Component {
     this.setState({ page: page.toLowerCase() });
   };
 
-  selectForm = formOption => {
-    this.setState({ selectedForm: formOption });
-  };
-
   setCurrentUser = email => {
     const cleanedEmail = email.toLowerCase().trim();
     const { userSheet } = this.state;
     const rh = userSheet.rowHeaders;
+    const currentUser = {};
     for (let i = 1; i < userSheet.values.length; i++) {
       const row = userSheet.values[i];
       const emailAddress = row[rh.email];
       if (emailAddress === cleanedEmail) {
-        const currentUser = {
-          email: cleanedEmail,
-        };
+        for (let h in userSheet.rowHeaders) {
+          const col = userSheet.rowHeaders[h];
+          currentUser[h] = row[col];
+        }
         this.setState({ currentUser: currentUser });
         return 'success';
       }
@@ -60,24 +58,56 @@ class App extends React.Component {
     return `${cleanedEmail} not found in our records.`;
   };
 
+  toggleNav = (bool) => {
+    console.log(bool);
+    this.setState({navIsClosed: bool}, () => console.log('navIsClosed - state', this.state))
+    
+  }
+
   render() {
-    const { currentUser, ready, page, selectedForm, sheetData } = this.state;
+    const { currentUser, ready, page, selectedForm, sheetData, navIsClosed } = this.state;
+    console.log('navIsClosed',navIsClosed);
+    if (!ready) {
+      return <Preloader />;
+    }
     return (
-      <div className={`App full-page dark-grey`}>
-        <Navbar selectPage={this.changePage} />
-        {!ready ? <Preloader /> : null}
-        {ready &&  page === 'forms' ?
-          <div>
-            <SubNav selectForm={this.selectForm} />
-            <InputPage
-              currentUser={currentUser}
-              selectedForm={selectedForm}
-            />
+      <div className={`App`}>
+        {currentUser.email ? (
+          <SideNav
+            changePage={this.changePage}
+            minimize={this.toggleNav}
+            minimized={navIsClosed}
+            currentUser={currentUser}
+          />
+        ) : (
+          <div className="sidenav-placeholder"></div>
+        )}
+        <div
+          className={`content-page ${
+            navIsClosed ? 'minimized-nav' : ''
+          }`}
+        >
+          <div className="row">
+            <div className="col s12">
+              {!currentUser.email ? (
+                <WelcomePage setCurrentUser={this.setCurrentUser} />
+              ) : page === 'dashboard' ? (
+                <Dashboard currentUser={currentUser} />
+              ) : page === 'meals' ? (
+                <NutritionalInformationForm
+                  currentUser={currentUser}
+                />
+              ) : page === 'checklist' ? (
+                <InputPage
+                  currentUser={currentUser}
+                  selectedForm={'am_checklist'}
+                />
+              ) : page === 'workouts' ? (
+                <Workouts />
+              ) : null}
+            </div>
           </div>
-          : !currentUser.email ? 
-            <WelcomePage setCurrentUser={this.setCurrentUser} />
-           : null}
-          {ready && currentUser.email && page === 'dashboard' ? <Dashboard user={currentUser}/> : null}
+        </div>
       </div>
     );
   }

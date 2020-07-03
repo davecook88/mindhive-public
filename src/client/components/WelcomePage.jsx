@@ -16,6 +16,11 @@ const WelcomePage = ({ setCurrentUser }) => {
   return (
     <div className="full-page absolute dark-grey flex-center-wrapper">
       <div className="container">
+        <div className="row">
+          <div className="col">
+            <img alt="mindhive-text-white" src={'https://i.imgur.com/0QiIzPU.png'} />
+          </div>
+        </div>
         <div class="row">
           <form class="col s12">
             <div class="row">
@@ -31,7 +36,6 @@ const WelcomePage = ({ setCurrentUser }) => {
                   Enter
                 </button>
                 {<div>{errors.toString()}</div>}
-                {<div>{email}</div>}
               </div>
             </div>
           </form>

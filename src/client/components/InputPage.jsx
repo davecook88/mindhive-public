@@ -1,22 +1,25 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import Forms from './Forms';
-import NutritionalInformationForm from './NutritionalInformation';
 
-const InputPage = ({ selectedForm, currentUser, mealSheet }) => {
+const InputPage = ({ selectedForm, currentUser }) => {
+  const currentUserEmail = currentUser.email;
+  const [ampmForm, setAmpm] = useState(selectedForm)
+
+  const setForm = (e) => {
+    const time = e.target.innerText.toLowerCase();
+    setAmpm(time + '_checklist')
+  }
   return (
-    <div className="dark-grey">
-      {selectedForm ? (
-        selectedForm === 'meals' ? (
-          <NutritionalInformationForm
-            mealSheet={mealSheet}
-            user={currentUser}
-          />
-        ) : (
-          <div className="container margin-top">
-            <Forms formName={selectedForm} email={currentUser.email} />
-          </div>
-        )
-      ) : null}
+    <div className="dark-grey row">
+      <div className="col">
+        <Forms formName={ampmForm} email={currentUserEmail} />
+      </div>
+      <div className="col">
+        <ul>
+          <li onClick={e => setForm(e)} className="nav-menu-item text-center pointer light-grey-text ampm-select">AM</li>
+          <li onClick={e => setForm(e)} className="nav-menu-item text-center pointer light-grey-text ampm-select">PM</li>
+        </ul>
+      </div>
     </div>
   );
 };

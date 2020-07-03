@@ -1,10 +1,10 @@
-import React, { Component, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UsdaCaller from '../classes/USDAcaller';
 import server from '../server';
 import Preloader from './Preloader';
 /*
-* TODO: Add commonly selected foods and a message to let user know that macro fields can be edited directly.
-*/
+ * TODO: Add commonly selected foods and a message to let user know that macro fields can be edited directly.
+ */
 const FoodBar = ({ foodData, addToTotal }) => {
   const [open, setOpen] = useState(false);
 
@@ -95,34 +95,38 @@ const FoodBar = ({ foodData, addToTotal }) => {
 
 const getMealSheet = server.getSheetsData('meals');
 
-const NutritionalInformationForm = ({user}) => {
+const NutritionalInformationForm = ({ currentUser }) => {
   const [ready, setReady] = useState(false);
   const [errors, setErrors] = useState();
   const [searchTerm, setSearchTerm] = useState('');
   const [usdaData, setUsdaData] = useState({});
   const [protein, setProtein] = useState(0);
   const [carbs, setCarbs] = useState(0);
-  const [fat,setFat] = useState(0);
-  const [mealSheet, setMealSheet] = useState({});
+  const [fat, setFat] = useState(0);
+  const [mealSheet, setMealSheet] = useState();
 
-  
-  console.log(getMealSheet);
-  getMealSheet.then(sheet => {
-    setMealSheet(sheet);
-    setReady(true);
-    console.log('getMealSheet callback', mealSheet);
-  })
-  .catch(err => console.log(err));
+  useEffect(() => {
+    if (!mealSheet) {
+      console.log(getMealSheet);
+      getMealSheet
+        .then(sheet => {
+          setMealSheet(sheet);
+          setReady(true);
+          console.log('getMealSheet callback', mealSheet);
+        })
+        .catch(err => console.log(err));
+    }
+  });
 
   const usda = new UsdaCaller();
 
-  const addToTotal = (nutrientsObject) => {
-    console.log('addToTotal',nutrientsObject)
+  const addToTotal = nutrientsObject => {
+    console.log('addToTotal', nutrientsObject);
     if (nutrientsObject.carbs) setCarbs(nutrientsObject.carbs + carbs);
     if (nutrientsObject.fat) setFat(nutrientsObject.fat + fat);
     if (nutrientsObject.protein) setProtein(nutrientsObject.protein + protein);
-    console.log('updatedMeal',carbs,protein,fat);
-  }
+    console.log('updatedMeal', carbs, protein, fat);
+  };
 
   const checkUSDA = () => {
     if (searchTerm) {
@@ -141,93 +145,153 @@ const NutritionalInformationForm = ({user}) => {
 
   const clickHandler = e => {
     e.preventDefault();
-    console.log('send',carbs,protein,fat);
+    console.log('send', carbs, protein, fat);
     const timeNow = new Date().toISOString();
-    const newRow = [timeNow, user.email,protein,fat,carbs,calculateCalories()];
+    const newRow = [
+      timeNow,
+      currentUser.email,
+      protein,
+      fat,
+      carbs,
+      calculateCalories(),
+    ];
 
     mealSheet.values.push(newRow);
     // const {values} = mealSheet;
-    console.log('about to updateAllValues', mealSheet)
+    console.log('about to updateAllValues', mealSheet);
     const updateValues = server.updateAllValues(mealSheet);
     console.log(updateValues);
     updateValues
-      .then(res => {console.log(res);})
+      .then(res => {
+        console.log(res);
+      })
       .catch(err => console.log(err));
-    // mealSheet.sheet.getRange(1, 1, values.length, values[0].length).setValues(values);
+    mealSheet.sheet
+      .getRange(1, 1, values.length, values[0].length)
+      .setValues(values);
   };
 
   const showFoodDetails = () => {
     if (usdaData.foods) {
       return usdaData.foods.map((food, i) => (
-        <FoodBar key={`$food-bar-${i}`} addToTotal={addToTotal} foodData={food} />
+        <FoodBar
+          key={`$food-bar-${i}`}
+          addToTotal={addToTotal}
+          foodData={food}
+        />
       ));
     }
   };
-
-
 
   const calculateCalories = () => {
     const fatCalories = fat * 9;
     const carbCalories = carbs * 4;
     const proteinCalories = protein * 4;
-    return (fatCalories + carbCalories + proteinCalories);
-  }
-  if (ready){
+    return fatCalories + carbCalories + proteinCalories;
+  };
+  if (ready) {
     return (
-      <div className="light-grey-text">
-        <div className="row">
-          <form className="col s6 m4">
-            
-            <div className="row">
-              <div className="col s12">
-                <input className='light-grey-text' type="text" id="protein" placeholder="input grams" onChange={(e) => setProtein(e.target.value)} value={protein}/>
-                <label for="protein">Protein</label>
+      <div className="light-grey-text dark-grey min-full-height">
+        <div className="container">
+          <div className="row text-center">
+            <div className="col">
+              <h6>
+                Enter your macros below or search the USDA database for the
+                nutritional information of your meal
+              </h6>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col s6 m3 nutrition-form white black-text shadow-center">
+              <div className="row">
+                <div className="col s8 offset-s2">
+                  <input
+                    className="light-grey-text"
+                    type="text"
+                    id="protein"
+                    placeholder="input grams"
+                    onChange={e => setProtein(e.target.value)}
+                    value={protein}
+                  />
+                  <label for="protein">Protein</label>
+                </div>
+                <div className="col s8 offset-s2">
+                  <input
+                    className="light-grey-text"
+                    type="text"
+                    id="carbs"
+                    placeholder="input grams"
+                    onChange={e => setCarbs(e.target.value)}
+                    value={carbs}
+                  />
+                  <label for="carbs">Carbohydrates</label>
+                </div>
+                <div className="col s8 offset-s2">
+                  <input
+                    className="light-grey-text"
+                    type="text"
+                    id="fats"
+                    placeholder="input grams"
+                    onChange={e => setFat(e.target.value)}
+                    value={fat}
+                  />
+                  <label for="fats">Fats</label>
+                </div>
+                <div className="col s8 offset-s2">
+                  <input
+                    className="light-grey-text"
+                    disabled
+                    type="text"
+                    id="total"
+                    placeholder=""
+                    value={calculateCalories()}
+                  />
+                  <label for="total">Total Calories</label>
+                </div>
               </div>
-              <div className="col s12">
-                <input className='light-grey-text' type="text" id="carbs" placeholder="input grams" onChange={(e) => setCarbs(e.target.value)} value={carbs}/>
-                <label for="carbs">Carbohydrates</label>
-              </div>
-              <div className="col s12">
-                <input className='light-grey-text' type="text" id="fats" placeholder="input grams" onChange={(e) =>setFat(e.target.value)} value={fat}/>
-                <label for="fats">Fats</label>
-              </div>
-              <div className="col s12">
-                <input className='light-grey-text' disabled type="text" id="total" placeholder="" value={calculateCalories()}/>
-                <label for="total">Total Calories</label>
+              <div className="row">
+                <button
+                  type="submit"
+                  className="btn"
+                  onClick={() => clickHandler}
+                >
+                  send
+                </button>
               </div>
             </div>
-            <div className="row">
-              <button type="submit" className="btn" onClick={clickHandler}>
-                send
-              </button>
-            </div>
-          </form>
-          <form className="col s6 m8">
-            <div class="row">
-              <div class="input-field col s12">
-                <input className='light-grey-text'
-                  placeholder="What did you eat?"
-                  id="food"
-                  type="text"
-                  class="validate"
-                  onChange={e => {
-                    setSearchTerm(e.target.value);
-                    checkUSDA();
-                  }}
-                />
+            <div className="col s12 m6">
+              <div class="row text-center">
+                <div className="col">
+                  <h6>Begin typing to search the USDA database</h6>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input
+                      className="light-grey-text"
+                      placeholder="What did you eat?"
+                      id="food"
+                      type="text"
+                      class="validate"
+                      onChange={e => {
+                        setSearchTerm(e.target.value);
+                        checkUSDA();
+                      }}
+                    />
 
-                <table>{showFoodDetails()}</table>
+                    <table>{showFoodDetails()}</table>
+                  </div>
+                </div>
               </div>
             </div>
-          </form>
+
+            {<div>{errors}</div>}
+          </div>
         </div>
-
-        {<div>{errors}</div>}
       </div>
     );
-    } else {
-      return <Preloader />
-    }
+  } else {
+    return <Preloader />;
+  }
 };
 
 export default NutritionalInformationForm;
