@@ -58,20 +58,40 @@ class App extends React.Component {
     return `${cleanedEmail} not found in our records.`;
   };
 
-  toggleNav = (bool) => {
+  setBackgroundColor = () => {
+    const { page } = this.state;
+    switch (page) {
+      case 'workouts':
+        return 'dark-grey';
+      case 'meals':
+        return 'dark-grey';
+      default:
+        return '';
+    }
+  };
+
+  toggleNav = bool => {
     console.log(bool);
-    this.setState({navIsClosed: bool}, () => console.log('navIsClosed - state', this.state))
-    
-  }
+    this.setState({ navIsClosed: bool }, () =>
+      console.log('navIsClosed - state', this.state)
+    );
+  };
 
   render() {
-    const { currentUser, ready, page, selectedForm, sheetData, navIsClosed } = this.state;
-    console.log('navIsClosed',navIsClosed);
+    const {
+      currentUser,
+      ready,
+      page,
+      selectedForm,
+      sheetData,
+      navIsClosed,
+    } = this.state;
+    console.log('navIsClosed', navIsClosed);
     if (!ready) {
       return <Preloader />;
     }
     return (
-      <div className={`App`}>
+      <div className={`App ${this.setBackgroundColor()}`}>
         {currentUser.email ? (
           <SideNav
             changePage={this.changePage}
@@ -82,11 +102,7 @@ class App extends React.Component {
         ) : (
           <div className="sidenav-placeholder"></div>
         )}
-        <div
-          className={`content-page ${
-            navIsClosed ? 'minimized-nav' : ''
-          }`}
-        >
+        <div className={`content-page ${navIsClosed ? 'minimized-nav' : ''}`}>
           <div className="row">
             <div className="col s12">
               {!currentUser.email ? (
@@ -94,9 +110,7 @@ class App extends React.Component {
               ) : page === 'dashboard' ? (
                 <Dashboard currentUser={currentUser} />
               ) : page === 'meals' ? (
-                <NutritionalInformationForm
-                  currentUser={currentUser}
-                />
+                <NutritionalInformationForm currentUser={currentUser} />
               ) : page === 'checklist' ? (
                 <InputPage
                   currentUser={currentUser}

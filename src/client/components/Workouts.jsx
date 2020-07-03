@@ -1,7 +1,6 @@
 import React from 'react';
-import Dropdown from './WorkoutsComponents/Dropdown';
 import DisplayWorkout from './WorkoutsComponents/DisplayWorkout';
-import ProgramDropdown from './WorkoutsComponents/ProgramDropdown';
+import ProgramsDisplay from './WorkoutsComponents/ProgramsDisplay';
 import server from '../server';
 import Preloader from './Preloader';
 
@@ -19,15 +18,15 @@ const formatExerciseJson = sheet => {
       name: name,
       description: description,
       videoUrl: videoUrl,
-      videoId: videoId
-    }
+      videoId: videoId,
+    };
     if (!json.hasOwnProperty(id)) {
       json[id] = exerciseObject;
     }
   });
   console.log(json);
   return json;
-}
+};
 
 const formatWorkoutJson = sheet => {
   const { values, rowHeaders } = sheet;
@@ -36,28 +35,26 @@ const formatWorkoutJson = sheet => {
     const program = row[rowHeaders['workout_program']];
     const week = row[rowHeaders['week']];
     const day = row[rowHeaders['day']];
-    const exercise_name = row[rowHeaders['exercise_name']];
-    const rest = row[rowHeaders['rest']];
-    const reps = row[rowHeaders['reps']];
-    const id = row[rowHeaders['exercise_id']];
+    const img = row[rowHeaders['program_image']];
+    const description = row[rowHeaders['program_description']];
     const exerciseObj = {
-      name: exercise_name,
-      rest: rest,
-      reps: reps,
-      id: id,
+      name: row[rowHeaders['exercise_name']],
+      rest: row[rowHeaders['rest']],
+      reps: row[rowHeaders['reps']],
+      id: row[rowHeaders['exercise_id']],
     };
-    
+
     if (!json.hasOwnProperty(program)) {
-      json[program] = { name: program, weeks: {} };
+      json[program] = { name: program, img:img, weeks: {}, description: description, };
     }
-    
+
     if (!json[program].weeks.hasOwnProperty(week)) {
       json[program].weeks[week] = {
         name: 'week ' + week,
         days: {},
       };
     }
-    
+
     if (!json[program].weeks[week].days.hasOwnProperty(day)) {
       json[program].weeks[week].days[day] = {
         name: 'day ' + day,
@@ -77,42 +74,27 @@ class Workouts extends React.Component {
       ready: false,
       sheet: {},
       program: null,
-
-      displayOptions: {
-        week: 'week-1',
-        day: 0,
-      },
-
-      programs: {
-        Program1: {
-          name: 'Program 1',
-          works: {
-            week1: {
-              name: 'Week 1',
-              days: ['Day 1', 'Day 2'],
-            },
-            week2: {
-              name: 'Week 2',
-              days: ['Day 1', 'Day 2'],
-            },
-          },
-        },
-      },
+      programs: null,
+      exercise: null,
+      exercises: null,
+      programDetails: null,
     };
   }
 
   componentDidMount() {
+    console.log('componentDidMount');
     M.AutoInit();
     const getWorkoutSheetsData = server.getSheetsData('workouts');
     const getExerciseSheetsData = server.getSheetsData('exercises');
-    
+
     console.log(getExerciseSheetsData);
     getExerciseSheetsData
       .then(sheet => {
         if (sheet !== {}) {
           const exercises = formatExerciseJson(sheet);
           console.log(JSON.stringify(exercises));
-          this.setState({ ready: true, exercises: exercises });
+          const ready = this.state.programs !== null;
+          this.setState({ ready: ready, exercises: exercises });
         }
       })
       .catch(err => console.log(err));
@@ -120,7 +102,9 @@ class Workouts extends React.Component {
       .then(sheet => {
         if (sheet !== {}) {
           const programs = formatWorkoutJson(sheet);
-          this.setState({ ready: true, programs: programs });
+          const ready = this.state.exercises !== null;
+          console.log(JSON.stringify(programs));
+          this.setState({ ready: ready, programs: programs });
         }
       })
       .catch(err => console.log(err));
@@ -145,68 +129,64 @@ class Workouts extends React.Component {
     });
   }
 
+  setExercise = id => {
+    console.log('setExercise', id);
+    const exercise = this.state.exercises[id];
+    if (exercise) {
+      this.setState({ exercise: exercise });
+    }
+  };
+
   render() {
-    const { ready, program, programs, displayOptions } = this.state;
-    console.log(ready);
-    if (!ready) {
+    const { program, programs, exercise } = this.state;
+    const selectedProgram = programs ? programs[program] : null;
+    const showPreloader = () => {
+      console.log(this.state);
       return <Preloader />;
-    } else {
-      return (
-        <div className="content-page">
-          <div className="row">
-            <div className="col s12">
-              <h1>Workouts</h1>
-              <hr />
-
-              <div className="container-flud">
-                <div className="row">
-                  <div className="col s6">
-                    <ProgramDropdown
-                      handleOption={this.handleSelectProgram}
-                      data={this.getPrograms()}
-                    />
-                  </div>
+    }
+    return (
+      <div className="dark-grey">
+        {!this.state.ready ? (
+          
+          showPreloader()
+        ) : (
+          <div>
+            <div className="row">
+              <div className="col s3 text-center">
+                <div className="mindhive-logo small">
+                  <img
+                    alt="mindhive-logo"
+                    src="https://i.imgur.com/eeeIFMK.png"
+                  />
                 </div>
-
-                <div className="row">
-                  <div className="col s6">
-                    <Dropdown
-                      handleOption={this.handleOption}
-                      data={programs[program].works}
-                    />
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col s12">
+              </div>
+              <div className="col s9 text-right light-grey-text">
+                <h1>{program || 'programs'}</h1>
+              </div>
+            </div>
+            <div className="row">
+              <div className="container-fluid">
+                {program ? (
+                  <div className="row">
                     <DisplayWorkout
-                      program={program}
-                      week={displayOptions.week}
-                      day={
-                        displayOptions.day
-                      } /** Here we should pass the elements needed in the dropdown. */
+                      weeks={selectedProgram.weeks}
+                      setExercise={this.setExercise}
+                      exercise={exercise}
                     />
                   </div>
-                </div>
-
+                ) : null}
                 <div className="row">
-                  <div className="col s12">
-                    <button
-                      className="btn waves-effect waves-light"
-                      type="submit"
-                      name="action"
-                    >
-                      Work on This
-                      <i className="material-icons right">send</i>
-                    </button>
-                  </div>
+                  <ProgramsDisplay
+                    programs={programs}
+                    clickHandler={this.handleSelectProgram}
+                  />
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      );
-    }
+        )}
+      </div>
+    );
   }
 }
 

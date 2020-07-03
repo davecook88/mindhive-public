@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
 const WorkoutCard = ({ program, clickHandler }) => {
-  console.log(program);
+  console.log('WorkoutCard', program);
   return (
-    <div className="row">
-      <div className="col s12 m6 padded">
-        <div className="card" >
+    <div className="col s12 m5">
+      <div className="padded">
+        <div className="card">
           <div className="card-image waves-effect waves-block waves-light">
             <img className="activator" src={program.img} />
           </div>
@@ -21,7 +21,9 @@ const WorkoutCard = ({ program, clickHandler }) => {
               <i className="material-icons right">close</i>
             </span>
             <p>{program.description}</p>
-            <div className="btn" onClick={() => clickHandler(program.name)}>select program</div>
+            <div className="btn" onClick={() => clickHandler(program.name)}>
+              select program
+            </div>
           </div>
         </div>
       </div>

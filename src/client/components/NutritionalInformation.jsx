@@ -202,11 +202,11 @@ const NutritionalInformationForm = ({ currentUser }) => {
             </div>
           </div>
           <div className="row">
-            <div className="col s6 m3 nutrition-form white black-text shadow-center">
+            <div className="col s6 m3 nutrition-form white black-text shadow-center text-center rounded">
               <div className="row">
                 <div className="col s8 offset-s2">
                   <input
-                    className="light-grey-text"
+                    className="light-grey-text "
                     type="text"
                     id="protein"
                     placeholder="input grams"
@@ -260,7 +260,7 @@ const NutritionalInformationForm = ({ currentUser }) => {
               </div>
             </div>
             <div className="col s12 m6">
-              <div class="row text-center">
+              <div class="row text-center padded">
                 <div className="col">
                   <h6>Begin typing to search the USDA database</h6>
                 </div>

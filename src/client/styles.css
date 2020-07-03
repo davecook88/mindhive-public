@@ -24,21 +24,22 @@ h1, h2, h3, h4, h5, h6 {
 	font-family: "Poppins";
 }
 .content-page {
-	margin-left: 19vw;
-	min-height: 100vh;
+	margin-left: 20vw;
+	min-height: 100%;
+	padding-left: 20px;
 	-webkit-transition: all 1s;
 	-moz-transition: all 1s;
 	transition: all 1s;
 }
 .content-page.minimized-nav {
-	margin-left: 4vw;
+	margin-left: 5vw;
 }
 .logo-image {
 	height: 4em;
 }
 span, p {
 	font-family: "Poppins";
-	line-height: 1.2em;
+	line-height: 1.5em;
 }
 .warning-bar-content {
 	display: none;
@@ -61,6 +62,9 @@ span, p {
 .flex {
 	display: flex;
 }
+.padded {
+	padding: 1em;
+}
 .dark-grey {
 	background-color: var(--grey);
 }
@@ -76,8 +80,8 @@ span, p {
 .text-center {
 	text-align: center;
 }
-.min-full-height {
-	min-height: 110vh;
+.text-right {
+	text-align: right;
 }
 .mindhive-blue {
 	background-color: var(--mindhive-blue);
@@ -121,7 +125,6 @@ span, p {
 }
 .highlight-on-hover:hover {
 	color: var(--green);
-	background-color: var(--grey);
 }
 .sub-text {
 	font-size: 0.9em;
@@ -132,6 +135,9 @@ span, p {
 }
 .side-padding {
 	padding: 0em 0.5em;
+}
+.rounded {
+	border-radius: 10%;
 }
 .tabs {
 	display: flex;
@@ -155,17 +161,17 @@ span, p {
 .chart-holder {
 	margin: 0.5em;
 }
-.sidenav-placeholder {
-	height: 100vh;
-	width:100vw;
-	position: absolute;
-	background-color: var(--grey);
-}
 .side-nav {
 	height: 100vh;
 	-webkit-transition: all 1s;
 	-moz-transition: all 1s;
 	transition: all 1s;
+}
+.sidenav-placeholder {
+	width:25vw;
+	height:100%;
+	position:absolute;
+	background-color: var(--grey);
 }
 .side-nav.full-width {
 	width: 20vw;
@@ -437,10 +443,6 @@ span, p {
 	transition: all 1s;
 	min-height: 100vh !important;
 }
-
-.dashboard-section.profile {
-	overflow: hidden;
-}
 .dashboard-section.front {
 	z-index: 1;
 }
@@ -512,22 +514,21 @@ span, p {
 	display: flex;
 	justify-content: center;
 }
+.mindhive-logo.small {
+	height: 10em;
+}
 .mindhive-logo > img {
 	height: inherit;
 }
-.nutrition-form {
-	padding: 1em;
-	border: 1px solid var(--grey);
-	border-radius: 10%;
-	text-align: center;
-	margin: 1em;
+a {
+	color: inherit !important;
 }
-
-.ampmselect {
-
-	width:5em;
+.dropdown-context {
+	padding: 30px;
 }
-.ampmselect:hover {
-	background-color: var(--light-grey);
-	color:var(--dark-grey);
+input.select-dropdown.dropdown-trigger {
+	color: var(--green);
+}
+.green-bottom-border {
+	border-bottom: 1px solid var(--green);
 }
