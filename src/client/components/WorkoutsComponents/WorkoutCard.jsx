@@ -3,7 +3,7 @@ import React from 'react';
 const WorkoutCard = ({ program, clickHandler }) => {
   console.log('WorkoutCard', program);
   return (
-    <div className="col s12 m5">
+    <div className="col s12 m4">
       <div className="padded">
         <div className="card">
           <div className="card-image waves-effect waves-block waves-light">

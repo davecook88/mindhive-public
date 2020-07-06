@@ -10,7 +10,7 @@ const LineChart = ({data, options}) => {
             data={data}
             options={options}
             width="100%"
-            height="200px"
+            height="150px"
             legendToggle
           />
 }

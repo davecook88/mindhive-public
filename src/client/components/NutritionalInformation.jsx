@@ -2,98 +2,12 @@ import React, { useState, useEffect } from 'react';
 import UsdaCaller from '../classes/USDAcaller';
 import server from '../server';
 import Preloader from './Preloader';
+import FoodBar from './NutritionComponents/FoodBar';
+import SavedMealsTable from './NutritionComponents/SavedMealsTable';
+import M from 'materialize-css';
 /*
  * TODO: Add commonly selected foods and a message to let user know that macro fields can be edited directly.
  */
-const FoodBar = ({ foodData, addToTotal }) => {
-  const [open, setOpen] = useState(false);
-
-  const { description, foodNutrients, brandOwner } = foodData;
-
-  const getNutrients = data => {
-    const obj = {};
-    data.forEach(nutrient => {
-      switch (nutrient.nutrientName) {
-        case 'Protein':
-          obj.protein = nutrient.value;
-          break;
-        case 'Total lipid (fat)':
-          obj.fat = nutrient.value;
-          break;
-        case 'Carbohydrate, by difference':
-          obj.carbs = nutrient.value;
-          break;
-        case 'Energy':
-          obj.calories = nutrient.value;
-        default:
-          break;
-      }
-    });
-    return obj;
-  };
-
-  const nutrientsObject = getNutrients(foodNutrients);
-
-  const addFood = e => {
-    e.preventDefault();
-    addToTotal(nutrientsObject);
-  };
-
-  const showNutrients = () => {
-    const obj = nutrientsObject;
-    return (
-      <div>
-        <div className="row">
-          <div className="col s6 m3">
-            <span className="sub-text">Calories: {obj.calories}</span>
-          </div>
-          <div className="col s6 m3 ">
-            <span className="sub-text">Carbs: {obj.carbs}</span>
-          </div>
-
-          <div className="col s6 m3 ">
-            <span className="sub-text">Fat: {obj.fat}</span>
-          </div>
-          <div className="col s6 m3 ">
-            <span className="sub-text">Protein: {obj.carbs}</span>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col s12 m8">
-            <span className="grey-text">
-              Calculated from value per serving size measure
-            </span>
-          </div>
-          <div className="col s12 m4">
-            <button className="btn" onClick={addFood}>
-              Add
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-  return (
-    <tr>
-      <td
-        className="pointer table-cell"
-        onClick={() => {
-          console.log(description, open, nutrientsObject);
-          setOpen(!open);
-        }}
-      >
-        <span className="header">{description} </span>
-        <div>
-          <span>{brandOwner}</span>
-        </div>
-        {open ? showNutrients() : null}
-      </td>
-    </tr>
-  );
-};
-
-const getMealSheet = server.getSheetsData('meals');
 
 const NutritionalInformationForm = ({ currentUser }) => {
   const [ready, setReady] = useState(false);
@@ -103,19 +17,10 @@ const NutritionalInformationForm = ({ currentUser }) => {
   const [protein, setProtein] = useState(0);
   const [carbs, setCarbs] = useState(0);
   const [fat, setFat] = useState(0);
-  const [mealSheet, setMealSheet] = useState();
+  const [savedMealSheet, setSavedMealSheet] = useState();
 
   useEffect(() => {
-    if (!mealSheet) {
-      console.log(getMealSheet);
-      getMealSheet
-        .then(sheet => {
-          setMealSheet(sheet);
-          setReady(true);
-          console.log('getMealSheet callback', mealSheet);
-        })
-        .catch(err => console.log(err));
-    }
+    refreshSheet();
   });
 
   const usda = new UsdaCaller();
@@ -143,32 +48,80 @@ const NutritionalInformationForm = ({ currentUser }) => {
     }
   };
 
-  const clickHandler = e => {
+  const addToMealSheet = e => {
+    e.preventDefault();
+    const timeNow = new Date().toISOString();
+    const newRow = {
+      time: timeNow,
+      email: currentUser.email,
+      protein: protein,
+      fat: fat,
+      carbs: carbs,
+      calories: calculateCalories(),
+    };
+
+    server
+      .addRowToSheet('meals', newRow)
+      .then(newRow => {
+        console.log(newRow);
+        M.toast({html: 'Meal logged successfully'})
+
+        refresh(true);
+      })
+      .catch(err => {
+        M.toast({html: 'Error logging meal'})
+
+        console.log(err);
+      });
+  };
+  
+  const refresh = (force) => {
+    if (force) setSavedMealSheet(null);
+    refreshSheet(true);
+  }
+
+  const refreshSheet = (force) => {
+    if (!savedMealSheet || force) {
+      const getSheet = server.getSheetsDataByUser(
+        'saved_meals',
+        currentUser.email
+      );
+      console.log(getSheet);
+      getSheet
+        .then(sheet => {
+          setSavedMealSheet(sheet);
+          setReady(true);
+          console.log('getSavedMealSheet callback', savedMealSheet);
+        })
+        .catch(err => console.log(err));
+    }
+  }
+
+  const saveMeal = e => {
+    const mealName = prompt('What do you want to call this meal?');
     e.preventDefault();
     console.log('send', carbs, protein, fat);
-    const timeNow = new Date().toISOString();
-    const newRow = [
-      timeNow,
-      currentUser.email,
-      protein,
-      fat,
-      carbs,
-      calculateCalories(),
-    ];
+    const newRow = {
+      id: new Date().getTime(),
+      email: currentUser.email,
+      name: mealName,
+      protein: protein,
+      fat: fat,
+      carbs: carbs,
+      calories: calculateCalories(),
+    };
+    server
+      .addRowToSheet('saved_meals', newRow)
+      .then(newRow => {
+        M.toast({html: 'Meal saved'})
 
-    mealSheet.values.push(newRow);
-    // const {values} = mealSheet;
-    console.log('about to updateAllValues', mealSheet);
-    const updateValues = server.updateAllValues(mealSheet);
-    console.log(updateValues);
-    updateValues
-      .then(res => {
-        console.log(res);
+        console.log(newRow);
       })
-      .catch(err => console.log(err));
-    mealSheet.sheet
-      .getRange(1, 1, values.length, values[0].length)
-      .setValues(values);
+      .catch(err => {
+        console.log(err);
+        M.toast({html: 'Error saving meal.'})
+
+      });
   };
 
   const showFoodDetails = () => {
@@ -202,11 +155,11 @@ const NutritionalInformationForm = ({ currentUser }) => {
             </div>
           </div>
           <div className="row">
-            <div className="col s6 m3 nutrition-form white black-text shadow-center text-center rounded">
-              <div className="row">
-                <div className="col s8 offset-s2">
+            <div className="col s12 m6 nutrition-form white black-text shadow-center text-center rounded">
+              <div className="row padded">
+                <div className="col s6">
                   <input
-                    className="light-grey-text "
+                    className=""
                     type="text"
                     id="protein"
                     placeholder="input grams"
@@ -215,9 +168,9 @@ const NutritionalInformationForm = ({ currentUser }) => {
                   />
                   <label for="protein">Protein</label>
                 </div>
-                <div className="col s8 offset-s2">
+                <div className="col s6">
                   <input
-                    className="light-grey-text"
+                    className=""
                     type="text"
                     id="carbs"
                     placeholder="input grams"
@@ -226,9 +179,9 @@ const NutritionalInformationForm = ({ currentUser }) => {
                   />
                   <label for="carbs">Carbohydrates</label>
                 </div>
-                <div className="col s8 offset-s2">
+                <div className="col s6">
                   <input
-                    className="light-grey-text"
+                    className=""
                     type="text"
                     id="fats"
                     placeholder="input grams"
@@ -237,9 +190,9 @@ const NutritionalInformationForm = ({ currentUser }) => {
                   />
                   <label for="fats">Fats</label>
                 </div>
-                <div className="col s8 offset-s2">
+                <div className="col s6">
                   <input
-                    className="light-grey-text"
+                    className=""
                     disabled
                     type="text"
                     id="total"
@@ -249,14 +202,28 @@ const NutritionalInformationForm = ({ currentUser }) => {
                   <label for="total">Total Calories</label>
                 </div>
               </div>
-              <div className="row">
-                <button
-                  type="submit"
-                  className="btn"
-                  onClick={() => clickHandler}
-                >
-                  send
-                </button>
+              <div className="row text-center">
+                <div className="col s12">
+                  <button
+                    type="submit"
+                    className="btn"
+                    onClick={e => addToMealSheet(e)}
+                  >
+                    send
+                  </button>
+                </div>
+                <div className="row text-center">
+                  <div className="col s12">
+                    <button
+                      type="submit"
+                      className="btn"
+                      onClick={e => saveMeal(e)}
+                    >
+                      save this meal
+                    </button>
+                    <br />
+                  </div>
+                </div>
               </div>
             </div>
             <div className="col s12 m6">
@@ -285,6 +252,14 @@ const NutritionalInformationForm = ({ currentUser }) => {
             </div>
 
             {<div>{errors}</div>}
+            <SavedMealsTable
+              sheet={savedMealSheet}
+              addToMealSheet={addToMealSheet}
+              setProtein={setProtein}
+              setFat={setFat}
+              setCarbs={setCarbs}
+              refresh = {refresh}
+            />
           </div>
         </div>
       </div>

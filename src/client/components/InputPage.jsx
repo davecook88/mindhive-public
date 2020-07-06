@@ -16,8 +16,8 @@ const InputPage = ({ selectedForm, currentUser }) => {
       </div>
       <div className="col">
         <ul>
-          <li onClick={e => setForm(e)} className="nav-menu-item text-center pointer light-grey-text ampm-select">AM</li>
-          <li onClick={e => setForm(e)} className="nav-menu-item text-center pointer light-grey-text ampm-select">PM</li>
+          <li onClick={e => setForm(e)} className="btn">AM</li>
+          <li onClick={e => setForm(e)} className="btn">PM</li>
         </ul>
       </div>
     </div>

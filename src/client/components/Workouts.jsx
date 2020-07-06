@@ -2,6 +2,7 @@ import React from 'react';
 import DisplayWorkout from './WorkoutsComponents/DisplayWorkout';
 import ProgramsDisplay from './WorkoutsComponents/ProgramsDisplay';
 import server from '../server';
+import SectionHeader from './SectionHeader';
 import Preloader from './Preloader';
 
 const formatExerciseJson = sheet => {
@@ -151,19 +152,7 @@ class Workouts extends React.Component {
           showPreloader()
         ) : (
           <div>
-            <div className="row">
-              <div className="col s3 text-center">
-                <div className="mindhive-logo small">
-                  <img
-                    alt="mindhive-logo"
-                    src="https://i.imgur.com/eeeIFMK.png"
-                  />
-                </div>
-              </div>
-              <div className="col s9 text-right light-grey-text">
-                <h1>{program || 'programs'}</h1>
-              </div>
-            </div>
+            <SectionHeader title={program || 'programs'} />
             <div className="row">
               <div className="container-fluid">
                 {program ? (

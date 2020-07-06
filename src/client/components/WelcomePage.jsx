@@ -9,6 +9,7 @@ const WelcomePage = ({ setCurrentUser }) => {
     e.preventDefault();
     const result = setCurrentUser(email);
     if (result !== 'success') {
+      
       setErrors(result);
     }
   };
@@ -18,27 +19,32 @@ const WelcomePage = ({ setCurrentUser }) => {
       <div className="container">
         <div className="row">
           <div className="col">
-            <img alt="mindhive-text-white" src={'https://i.imgur.com/0QiIzPU.png'} />
+            <img alt="mindhive-text-white" className="half-width" src={'https://i.imgur.com/0QiIzPU.png'} />
           </div>
         </div>
-        <div class="row">
+        <div className="row">
           <form class="col s12">
             <div class="row">
-              <div class="input-field col s6">
+              <div class="input-field col s12 m6">
                 <input
                   placeholder="Enter your email address to begin"
                   id="first_name"
                   type="email"
-                  class="validate"
+                  class="validate white-text"
                   onChange={e => setEmail(e.target.value)}
                 />
                 <button type="submit" className="btn" onClick={clickHandler}>
                   Enter
                 </button>
-                {<div>{errors.toString()}</div>}
+                {<div>{errors}</div>}
               </div>
             </div>
           </form>
+        </div>
+        <div className="row">
+          <div className="col">
+            <a className="light-grey-text" href="https://docs.google.com/forms/d/e/1FAIpQLSdCi045uQG2DkyJQHLe35aLPbakmnfpB_yg66r5Meu5gNNLoA/viewform">No account? Sign up here.</a>
+          </div>
         </div>
       </div>
     </div>

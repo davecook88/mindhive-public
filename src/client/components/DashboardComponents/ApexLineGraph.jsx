@@ -2,9 +2,18 @@ import React, { useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import Preloader from '../Preloader'
 
-export default function ApexLineGraph({ data, color, title, showLabels }) {
+function sortFunction(a, b) {
+  if (a[0] === b[0]) {
+      return 0;
+  }
+  else {
+      return (a[0] < b[0]) ? -1 : 1;
+  }
+}
 
-  console.log('Apex chart', data);
+export default function ApexLineGraph({ data, color, title, showLabels }) {
+  data = data.sort(sortFunction);
+  console.log('Apex chart ' + title, data);
 
 
   // const [window,setWindow] = UseState
@@ -73,13 +82,13 @@ export default function ApexLineGraph({ data, color, title, showLabels }) {
       show:false,
       type: 'datetime',
       min: data[0][0],
-      tickAmount: 6,
+      // tickAmount: 6,
     },
     yaxis: {
-      show:false,
+      show:true,
       labels: {
         formatter: val => val.toFixed(2),
-        show:false
+        show:true
       },
       // title: {
       //   text: title,

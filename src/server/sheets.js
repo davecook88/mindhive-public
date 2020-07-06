@@ -20,23 +20,59 @@ export const getSheetsData = (sheetName) => {
   return returnObject;
 };
 
-export const addSheet = sheetTitle => {
-  SpreadsheetApp.getActive().insertSheet(sheetTitle);
-  return getSheetsData();
-};
+export const addRowToSheet = (sheetName, rowObject) => {
+  const master = getMasterSheet();
+  const ssm = new SpreadsheetManager(master, sheetName);
+  const { values, rowHeaders, sheet } = ssm;
 
-export const deleteSheet = sheetIndex => {
-  const sheets = getSheets();
-  SpreadsheetApp.getActive().deleteSheet(sheets[sheetIndex]);
-  return getSheetsData();
-};
+  const newRow = [];
+  
+  for (let header in rowHeaders){
+    const colIndex = rowHeaders[header];
+    newRow[colIndex] = rowObject[header] || '';
+  }
 
-export const setActiveSheet = sheetName => {
-  SpreadsheetApp.getActive()
-    .getSheetByName(sheetName)
-    .activate();
-  return getSheetsData();
-};
+  values.push(newRow);
+  sheet.getRange(1, 1, values.length, values[0].length).setValues(values);
+  return newRow;
+}
+
+export const deleteRowById = (sheetName, id) => {
+  const master = getMasterSheet();
+  const ssm = new SpreadsheetManager(master, sheetName);
+  Logger.log('deleteRowById', ssm);
+  const { values, rowHeaders, sheet } = ssm;
+
+  values.some((row, index) => {
+    const rowId = row[rowHeaders['id']];
+    Logger.log(rowId);
+    if (id == rowId){
+      sheet.getDataRange().clearContent();
+      values.splice(index,1);
+      sheet.getRange(1, 1, values.length, values[0].length).setValues(values);
+      return true;
+    }
+  });
+  
+}
+
+export const getSheetsDataByUser = (sheetName, email) => {
+  const sheet = getSheetsData(sheetName);
+  Logger.log('getSheetsDataByUser', sheet);
+  const { values, rowHeaders } = sheet;
+  const filteredValues = values.filter((row, i) => {
+    return (
+      row[rowHeaders['email']] === email
+    )
+  });
+  const returnObject =  {
+    values:filteredValues,
+    rowHeaders:rowHeaders,
+    name:sheetName,
+  };
+  Logger.log(sheetName + 'getSheetsDataByUser returns', JSON.stringify(returnObject));
+  return returnObject;
+}
 
 export const updateAllValues = ssm => {
   const master = getMasterSheet();
@@ -46,3 +82,25 @@ export const updateAllValues = ssm => {
   const { values } = ssm;
   sheet.getRange(1, 1, values.length, values[0].length).setValues(values);
 };
+
+export const updateUserSheet = (user) => {
+  const master = getMasterSheet();
+  Logger.log('updateUserSheet', user);
+  const ssm = new SpreadsheetManager(master, 'users');
+  let updated = false;
+  const { values, rowHeaders, sheet } = ssm;
+  values.forEach(row => {
+    const sheetEmail = row[rowHeaders['email']];
+    Logger.log('sheetEmail', sheetEmail);
+    if (sheetEmail === user.email){
+      Object.entries(user).forEach(([key,value]) => {
+        Logger.log(value, key)
+        row[rowHeaders[key]] = value;
+      })
+      updated = true;
+    }
+  });
+  Logger.log(values);
+  sheet.getRange(1, 1, values.length, values[0].length).setValues(values);
+  return 'user updated successfully';
+}
